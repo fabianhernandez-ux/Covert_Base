@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-slate-900 text-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Normalizador Estándar de Bases de Datos de Marketing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+    </style>
+</head>
+<body class="h-full flex flex-col justify-between antialiased">
+
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-40 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="p-2.5 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg shadow-indigo-500/20">
+                    <i data-lucide="database" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        DataNorm <span class="text-xs bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded-full font-semibold border border-indigo-500/30">v5.6</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Conversor Estandarizado con Segmentación de Fechas y Filtros Avanzados</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="loadSampleData('meta')" class="px-3.5 py-2 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition flex items-center gap-2 cursor-pointer">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    Cargar Demo Meta
+                </button>
+                <button onclick="loadSampleData('google')" class="px-3.5 py-2 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition flex items-center gap-2 cursor-pointer">
+                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                    Cargar Demo Google
+                </button>
+                <button onclick="resetApp()" class="p-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition cursor-pointer" title="Reiniciar aplicación">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-8">
+        
+        <div class="bg-gradient-to-r from-slate-800 via-slate-800 to-indigo-950/40 border border-slate-700/60 rounded-2xl p-6 relative overflow-hidden shadow-xl">
+            <div class="absolute -right-12 -bottom-12 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="flex items-start gap-4">
+                <div class="p-3 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20 shrink-0">
+                    <i data-lucide="sparkles" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-white mb-1">Mapeador Estandarizado de Canales de Adquisición</h2>
+                    <p class="text-sm text-slate-300 leading-relaxed max-w-4xl">
+                        Sube tu archivo de <strong>Meta Ads</strong> o de <strong>Google Ads</strong>. El sistema identificará de manera automática el rango de fechas en Google Ads y filtrará para conservar únicamente aquellas campañas con estado <strong>"Habilitada"</strong> y que posean un nombre válido.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 flex flex-col justify-between shadow-lg relative group hover:border-blue-500/50 transition-colors">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
+                            <i data-lucide="infinity" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-white">Canal: Meta Ads</h3>
+                            <p class="text-xs text-slate-400">Normalizador y Editor Interactivo (13 Columnas)</p>
+                        </div>
+                    </div>
+
+                    <div class="border-2 border-dashed border-slate-700 hover:border-blue-500 rounded-xl p-6 text-center cursor-pointer transition-colors relative" id="drop-zone-meta">
+                        <input type="file" id="file-meta" accept=".csv" class="hidden" onchange="handleFileSelect('meta')">
+                        <label for="file-meta" class="cursor-pointer flex flex-col items-center justify-center space-y-2">
+                            <div class="p-3 bg-slate-900 rounded-full text-slate-400" id="icon-meta-container">
+                                <i data-lucide="upload-cloud" class="w-6 h-6" id="icon-meta"></i>
+                            </div>
+                            <p class="text-sm font-semibold text-slate-300" id="label-meta">Sube o arrastra tu CSV de Meta Ads</p>
+                        </label>
+                    </div>
+
+                    <div id="status-meta" class="mt-4 hidden bg-slate-900/60 rounded-xl p-4 border border-slate-800 text-xs space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Archivo detectado:</span>
+                            <span class="font-semibold text-blue-400" id="filename-meta">-</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Filas activas listas:</span>
+                            <span class="font-mono bg-emerald-950 text-emerald-400 border border-emerald-800/60 px-2 py-0.5 rounded font-bold" id="rows-active-meta">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <button id="btn-process-meta" onclick="processData('meta')" disabled class="w-full bg-slate-700 text-slate-400 font-semibold text-sm py-2.5 px-4 rounded-xl transition cursor-not-allowed flex items-center justify-center gap-2">
+                        <i data-lucide="play" class="w-4 h-4"></i>1. Cargar y Procesar Meta Ads
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6 flex flex-col justify-between shadow-lg relative group hover:border-amber-500/50 transition-colors">
+                <div>
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 border border-amber-500/20">
+                            <i data-lucide="search" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-white">Canal: Google Ads</h3>
+                            <p class="text-xs text-slate-400">Filtro automático de campañas Habilitadas</p>
+                        </div>
+                    </div>
+
+                    <div class="border-2 border-dashed border-slate-700 hover:border-amber-500 rounded-xl p-6 text-center cursor-pointer transition-colors relative" id="drop-zone-google">
+                        <input type="file" id="file-google" accept=".csv" class="hidden" onchange="handleFileSelect('google')">
+                        <label for="file-google" class="cursor-pointer flex flex-col items-center justify-center space-y-2">
+                            <div class="p-3 bg-slate-900 rounded-full text-slate-400" id="icon-google-container">
+                                <i data-lucide="upload-cloud" class="w-6 h-6" id="icon-google"></i>
+                            </div>
+                            <p class="text-sm font-semibold text-slate-300" id="label-google">Sube o arrastra tu CSV de Google Ads</p>
+                        </label>
+                    </div>
+
+                    <div id="status-google" class="mt-4 hidden bg-slate-900/60 rounded-xl p-4 border border-slate-800 text-xs space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Archivo detectado:</span>
+                            <span class="font-semibold text-amber-400" id="filename-google">-</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-slate-400">Filas activas listas:</span>
+                            <span class="font-mono bg-emerald-950 text-emerald-400 border border-emerald-800/60 px-2 py-0.5 rounded font-bold" id="rows-active-google">0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <button id="btn-process-google" onclick="processData('google')" disabled class="w-full bg-slate-700 text-slate-400 font-semibold text-sm py-2.5 px-4 rounded-xl transition cursor-not-allowed flex items-center justify-center gap-2">
+                        <i data-lucide="play" class="w-4 h-4"></i>1. Cargar y Procesar Google Ads
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="notification-bar" class="hidden p-4 rounded-xl border flex items-center gap-3 transition-all duration-300 shadow-xl">
+            <div class="p-2 rounded-lg" id="notification-icon-bg">
+                <i id="notification-icon" class="w-5 h-5 text-white"></i>
+            </div>
+            <div class="flex-1">
+                <p id="notification-message" class="text-sm font-semibold text-white"></p>
+                <p id="notification-detail" class="text-xs text-slate-400"></p>
+            </div>
+            <button onclick="hideNotification()" class="text-slate-400 hover:text-white cursor-pointer p-1">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <div class="bg-slate-800/40 border border-slate-700/80 rounded-2xl p-6 space-y-6 shadow-xl relative">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i data-lucide="edit-3" class="w-5 h-5 text-indigo-400"></i> 2. Previsualización y Edición de Datos Normalizados (13 Columnas Unificadas)
+                    </h3>
+                </div>
+                <div class="flex bg-slate-900 p-1 rounded-xl border border-slate-800">
+                    <button id="tab-meta" onclick="switchPreviewTab('meta')" class="px-4 py-2 text-xs font-semibold rounded-lg bg-slate-800 text-white shadow-sm transition cursor-pointer">Meta Ads</button>
+                    <button id="tab-google" onclick="switchPreviewTab('google')" class="px-4 py-2 text-xs font-semibold rounded-lg text-slate-400 hover:text-white transition cursor-pointer">Google Ads</button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto w-full border border-slate-800 rounded-xl bg-slate-950/60 max-h-96">
+                <table class="min-w-full divide-y divide-slate-800 text-xs text-left">
+                    <thead class="bg-slate-900 text-slate-300 uppercase tracking-wider sticky top-0 z-10 font-bold" id="preview-table-header"></thead>
+                    <tbody id="preview-table-body" class="divide-y divide-slate-800/60 text-slate-300">
+                        <tr><td class="px-4 py-12 text-center text-slate-500">Sube y procesa un archivo o carga los demos de prueba arriba para comenzar a editar.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-800/60">
+                <div class="text-xs text-slate-400 font-medium" id="preview-status-text">Mostrando 0 registros</div>
+                <button id="btn-final-convert" onclick="triggerFinalConversion()" class="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-bold text-sm rounded-xl transition shadow-lg opacity-50 cursor-not-allowed" disabled>
+                    <i data-lucide="check-check" class="w-5 h-5"></i> Confirmar Cambios y Finalizar Conversión
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-800 bg-slate-950 py-6 text-center text-xs text-slate-500">
+        <p>© 2026 Normalizador Profesional de Datos de Marketing - Procesamiento 100% Local</p>
+    </footer>
+
+    <script>
+        const appState = {
+            meta: { rawContent: null, fileName: "", processedData: null },
+            google: { rawContent: null, fileName: "", processedData: null },
+            currentTab: 'meta'
+        };
+
+        const MASTER_OFICIAL_COLUMNS = [
+            "Inicio del reporte", "Fin del reporte", "Nombre de la campaña", "Resultados",
+            "Alcance", "Frecuencia", "Costo por resultados", "Importe gastado (MXN)",
+            "Impresiones", "CPM (costo por mil impresiones) (MXN)", "Clics (todos)", "CTR (todos)", "CPC (todos) (MXN)"
+        ];
+
+        const MetaColumnSynonyms = {
+            "Inicio del reporte": ["inicio del reporte", "reporting start", "start date", "fecha de inicio", "desde"],
+            "Fin del reporte": ["fin del reporte", "reporting end", "end date", "fecha de fin", "hasta"],
+            "Nombre de la campaña": ["nombre de la campaña", "campaign name", "campaña", "campaign_name"],
+            "Resultados": ["resultados", "results", "conversions", "conversiones"],
+            "Alcance": ["alcance", "reach"],
+            "Frecuencia": ["frecuencia", "frequency"],
+            "Costo por resultados": ["costo por resultados", "cost per results", "cpr"],
+            "Importe gastado (MXN)": ["importe gastado (mxn)", "importe gastado", "amount spent", "costo", "gasto", "spend"],
+            "Impresiones": ["impresiones", "impressions", "impr.", "impr"],
+            "CPM (costo por mil impresiones) (MXN)": ["cpm", "cpm (costo por mil impresiones) (mxn)"],
+            "Clics (todos)": ["clics (todos)", "clics", "clicks", "clicks (all)"],
+            "CTR (todos)": ["ctr", "ctr (todos)"],
+            "CPC (todos) (MXN)": ["cpc", "cpc (todos) (mxn)", "prom. cpc"]
+        };
+
+        const GoogleInputColumnSynonyms = {
+            "Estado de la campaña": ["estado de la campaña", "estado de la campana", "campaign state", "status"],
+            "Nombre de la campaña": ["campaña", "campana", "campaign", "nombre de la campaña"],
+            "Impresiones": ["impr.", "impresiones", "impressions"],
+            "Clics (todos)": ["interacciones", "interactions", "clics", "clicks"],
+            "CPC (todos) (MXN)": ["cpc", "prom. cpc", "average cpc"],
+            "Importe gastado (MXN)": ["costo", "cost", "gasto", "spent"],
+            "CTR (todos)": ["ctr", "porcentaje de clics"],
+            "Resultados": ["conversiones", "conversions", "resultados"],
+            "Costo por resultados": ["costo/conv.", "costo por resultados", "cost per conv."]
+        };
+
+        function showNotification(type, message, detail = "") {
+            const bar = document.getElementById('notification-bar');
+            const icon = document.getElementById('notification-icon');
+            const iconBg = document.getElementById('notification-icon-bg');
+            document.getElementById('notification-message').innerText = message;
+            document.getElementById('notification-detail').innerText = detail;
+
+            if (type === 'success') {
+                bar.className = "p-4 rounded-xl border border-emerald-500/30 bg-emerald-950/30 flex items-center gap-3 shadow-xl";
+                iconBg.className = "p-2 rounded-lg bg-emerald-500/20 text-emerald-400";
+                icon.setAttribute('data-lucide', 'check-circle-2');
+            } else {
+                bar.className = "p-4 rounded-xl border border-blue-500/30 bg-blue-950/30 flex items-center gap-3 shadow-xl";
+                iconBg.className = "p-2 rounded-lg bg-blue-500/20 text-blue-400";
+                icon.setAttribute('data-lucide', 'info');
+            }
+            bar.classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function hideNotification() {
+            document.getElementById('notification-bar').classList.add('hidden');
+        }
+
+        function handleFileSelect(platform) {
+            const file = document.getElementById(`file-${platform}`).files[0];
+            if (!file) return;
+            appState[platform].fileName = file.name;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                appState[platform].rawContent = e.target.result;
+                document.getElementById(`status-${platform}`).classList.remove('hidden');
+                document.getElementById(`filename-${platform}`).innerText = file.name;
+                const btn = document.getElementById(`btn-process-${platform}`);
+                btn.removeAttribute('disabled');
+                btn.className = "w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm py-2.5 px-4 rounded-xl transition cursor-pointer flex items-center justify-center gap-2";
+                document.getElementById(`label-${platform}`).innerText = `¡CSV Cargado!`;
+                lucide.createIcons();
+            };
+            reader.readAsText(file, "UTF-8");
+        }
+
+        function cleanNumber(val) {
+            if (!val) return 0;
+            let clean = val.toString().replace(/[\$\s%MXN]/gi, '').replace(/"/g, '').replace(/,/g, '');
+            let parsed = parseFloat(clean);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+
+        function parseCSV(text) {
+            let lines = []; let row = [""]; let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i]; let next = text[i+1];
+                if (c === '"') { inQuotes = !inQuotes; }
+                else if (c === ',' && !inQuotes) { row.push(''); }
+                else if ((c === '\r' || c === '\n') && !inQuotes) { 
+                    if (c === '\r' && next === '\n') { i++; } 
+                    lines.push(row); row = ['']; 
+                }
+                else { row[row.length - 1] += c; }
+            }
+            if (row.length > 1 || row[0] !== '') lines.push(row);
+            return lines;
+        }
+
+        function processData(platform) {
+            const rawContent = appState[platform].rawContent;
+            if (!rawContent) return;
+
+            const rawRows = parseCSV(rawContent);
+            let headerRowIndex = -1;
+            let detectedStartDate = "";
+            let detectedEndDate = "";
+
+            for (let i = 0; i < rawRows.length; i++) {
+                const row = rawRows[i];
+                const nonEmtpyCells = row.filter(cell => cell.trim().length > 0);
+
+                if (platform === 'google' && nonEmtpyCells.length === 1) {
+                    const singleCell = nonEmtpyCells[0];
+                    if (singleCell.includes('-') && (singleCell.toLowerCase().includes('mayo') || singleCell.toLowerCase().includes('enero') || /\d/.test(singleCell))) {
+                        const parts = singleCell.split('-');
+                        if (parts.length === 2) {
+                            detectedStartDate = parts[0].trim();
+                            detectedEndDate = parts[1].trim();
+                        }
+                    }
+                }
+
+                if (nonEmtpyCells.length > 3 && headerRowIndex === -1) {
+                    const hasKeywords = row.some(cell => {
+                        const cLower = cell.toLowerCase().trim();
+                        return cLower === 'campaña' || cLower === 'campana' || cLower === 'impr.' || cLower === 'interacciones';
+                    });
+                    if (hasKeywords) headerRowIndex = i;
+                }
+            }
+
+            if (headerRowIndex === -1) return;
+
+            const rawHeaders = rawRows[headerRowIndex].map(h => h.trim().toLowerCase());
+            const indexMap = {};
+
+            for (const oficial
